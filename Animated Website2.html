@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Animated Website 2</title>
+    <meta charset="UTF-8">
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        background: #0d0d25;
+        overflow: hidden;
+        height: 100%;
+      }
+
+      .container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      canvas {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .counter {
+        position: absolute;
+        top: 45%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 60px;
+        color: #66f2ff;
+        font-family: monospace;
+        text-shadow: 0 0 10px #66f2ff, 0 0 20px #66f2ff;
+        z-index: 1;
+      }
+    .txt {
+        position: absolute;
+        top: 55%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 30px;
+        color: #66f2ff;
+        font-family: monospace;
+        text-shadow: 0 0 10px #66f2ff, 0 0 20px #66f2ff;
+        z-index: 1;
+    }
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+        <canvas id="bg"></canvas>
+        <div class="counter" id="counter">0</div>
+        <div class="txt" id="txt">particles arrived</div>
+    </div>
+    <script>
+        const canvas = document.getElementById('bg');
+        const ctx = canvas.getContext('2d');
+        const counterDisplay = document.getElementById('counter');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const center = { x: canvas.width / 2, y: canvas.height / 2 };
+        let count = 0;
+
+        function createParticle() {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = canvas.width / 2 + Math.random() * 100;
+        const speed = 0.5 + Math.random();
+
+        const control = {
+            x: center.x + (Math.random() - 0.5) * 300,
+            y: center.y + (Math.random() - 0.5) * 300
+        };
+
+        particles.push({
+            x: center.x + Math.cos(angle) * radius,
+            y: center.y + Math.sin(angle) * radius,
+            cx: control.x,
+            cy: control.y,
+            progress: 0,
+            speed: speed,
+            size: Math.random() * 2 + 1
+        });
+        }
+
+        function animate() {
+        ctx.fillStyle = 'rgba(13, 13, 37, 0.2)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#66f2ff';
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            const t = p.progress;
+
+            const x = (1 - t) * (1 - t) * p.x + 2 * (1 - t) * t * p.cx + t * t * center.x;
+            const y = (1 - t) * (1 - t) * p.y + 2 * (1 - t) * t * p.cy + t * t * center.y;
+
+            ctx.beginPath();
+            ctx.arc(x, y, p.size, 0, 2 * Math.PI);
+            ctx.fill();
+
+            p.progress += 0.005 * p.speed;
+
+            if (p.progress >= 1) {
+            particles.splice(i, 1);
+            count++;
+            counterDisplay.textContent = count;
+            }
+        }
+
+        if (particles.length < 150) {
+            createParticle();
+        }
+
+        requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+  </body>
+</html>
